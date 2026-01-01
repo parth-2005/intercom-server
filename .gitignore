@@ -15,6 +15,9 @@ signaling.exe
 go.work
 go.work.sum
 
+# Firebase credentials
+serviceAccountKey.json
+
 # Editor directories and files
 .vscode/
 .idea/
@@ -25,3 +28,4 @@ go.work.sum
 # OS files
 .DS_Store
 Thumbs.db
+firebase.json
