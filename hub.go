@@ -53,13 +53,12 @@ func (h *Hub) run() {
 }
 
 func (h *Hub) broadcastPresence(user string, online bool) {
+	onlineStatus := online
 	for _, c := range h.clients {
 		c.send <- Message{
-			Type: "presence",
-			Data: map[string]interface{}{
-				"user":   user,
-				"online": online,
-			},
+			Type:   "presence",
+			User:   user,
+			Online: &onlineStatus,
 		}
 	}
 }
@@ -111,12 +110,18 @@ func (h *Hub) handleMessage(sender *Client, msg Message) {
 
 	case "call_end":
 		callID := msg.CallID
+
+		recipients := make(map[string]*Client)
 		for user, cID := range h.activeCall {
 			if cID == callID {
+				if client, ok := h.clients[user]; ok {
+					recipients[user] = client
+				}
 				delete(h.activeCall, user)
 			}
 		}
-		for _, c := range h.clients {
+
+		for _, c := range recipients {
 			c.send <- Message{Type: "call_ended", CallID: callID}
 		}
 	}
